@@ -1,4 +1,4 @@
 [submodule "hyperion-webos"]
 	path = hyperion-webos
 	url = https://github.com/ICEbAIR82/hyperion-webos.git
-	branch = piccap-plus-main
+	branch = piccapplus-main

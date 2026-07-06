@@ -1,10 +1,10 @@
 {
-  "id" : "org.webosbrew.piccap-plus.service",
+  "id" : "org.webosbrew.piccapplus.service",
   "description":"Native PicCap-Plus hyperion-webos service",
   "engine":"native",
   "executable":"hyperion-webos",
   "services": [{
-    "name": "org.webosbrew.piccap-plus.service",
+    "name": "org.webosbrew.piccapplus.service",
     "description": "Native PicCap-Plus hyperion-webos service"
   }]
 }

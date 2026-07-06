@@ -1,5 +1,5 @@
 {
-  "name": "org.webosbrew.piccap-plus",
+  "name": "org.webosbrew.piccapplus",
   "version": "0.5.100",
   "description": "PicCap-Plus Hyperion Sender & WebUI",
   "main": "index.html",
@@ -13,8 +13,8 @@
     "build-backend": "mkdir -p ./build/hyperion-webos && mkdir -p ./hyperion-webos/build && cd ./hyperion-webos/build && cmake -DCMAKE_TOOLCHAIN_FILE=$TOOLCHAIN_FILE .. && make hyperion-webos gm_backend halgal_backend dile_vt_backend vtcapture_backend && cd ../.. && cp ./hyperion-webos/build/hyperion-webos ./build/hyperion-webos/ && cp ./hyperion-webos/build/libdile_vt_backend.so ./build/hyperion-webos/ && cp ./hyperion-webos/build/libgm_backend.so ./build/hyperion-webos/ && cp ./hyperion-webos/build/libhalgal_backend.so ./build/hyperion-webos/ && cp ./hyperion-webos/build/libvtcapture_backend.so ./build/hyperion-webos/ && cp ./servicefiles/* ./build/hyperion-webos && chmod +x ./build/hyperion-webos/hyperion-webos ./build/hyperion-webos/piccapautostart",
     "build-all": "mkdir -p ./build/piccap-frontend && webpack && mkdir -p ./build/hyperion-webos && mkdir -p ./hyperion-webos/build && cd ./hyperion-webos/build && cmake -DCMAKE_TOOLCHAIN_FILE=$TOOLCHAIN_FILE .. && make && cd ../.. && cp ./hyperion-webos/build/hyperion-webos ./build/hyperion-webos/ && cp ./hyperion-webos/build/libdile_vt_backend.so ./build/hyperion-webos/ && cp ./hyperion-webos/build/libgm_backend.so ./build/hyperion-webos/ && cp ./hyperion-webos/build/libhalgal_backend.so ./build/hyperion-webos/ && cp ./hyperion-webos/build/libvtcapture_backend.so ./build/hyperion-webos/ && cp ./servicefiles/* ./build/hyperion-webos && chmod +x ./build/hyperion-webos/hyperion-webos ./build/hyperion-webos/piccapautostart",
     "package": "ares-package ./build/piccap-frontend ./build/hyperion-webos -o ./build",
-    "deploy": "ares-install org.webosbrew.piccap-plus_${npm_package_version}_all.ipk",
-    "launch": "ares-launch org.webosbrew.piccap-plus"
+    "deploy": "ares-install org.webosbrew.piccapplus_${npm_package_version}_all.ipk",
+    "launch": "ares-launch org.webosbrew.piccapplus"
   },
   "browserslist": [
     "chrome 38"
