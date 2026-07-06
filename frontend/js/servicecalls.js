@@ -287,7 +287,7 @@ window.serviceResetSettings = () => {
     novideo: false,
     nogui: false,
 
-    address: '',
+    address: '172.16.24.1',
     port: 19400,
     priority: 150,
 
