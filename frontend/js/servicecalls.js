@@ -54,7 +54,7 @@ function makeServiceRoot() {
     {
       method: 'exec',
       parameters: {
-        command: '/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/elevate-service org.webosbrew.piccap; /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/elevate-service org.webosbrew.piccap.service',
+        command: '/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/elevate-service org.webosbrew.piccap-plus; /media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/elevate-service org.webosbrew.piccap-plus.service',
       },
       onSuccess(result) {
         onHBExec(result);
@@ -105,7 +105,7 @@ function checkRoot() {
     document.getElementById('txtInfoState').innerHTML = 'Checking root status';
     /* eslint-disable no-undef */
     webOS.service.request(
-      'luna://org.webosbrew.piccap.service',
+      'luna://org.webosbrew.piccap-plus.service',
       {
         method: 'status',
         parameters: {},
@@ -128,7 +128,7 @@ function getStatus() {
   document.getElementById('txtInfoState').innerHTML = 'Getting status info..';
   /* eslint-disable no-undef */
   webOS.service.request(
-    'luna://org.webosbrew.piccap.service',
+    'luna://org.webosbrew.piccap-plus.service',
     {
       method: 'status',
       parameters: {},
@@ -161,7 +161,7 @@ function getSettings() {
   document.getElementById('txtInfoState').innerHTML = 'Loading settings..';
   /* eslint-disable no-undef */
   webOS.service.request(
-    'luna://org.webosbrew.piccap.service',
+    'luna://org.webosbrew.piccap-plus.service',
     {
       method: 'getSettings',
       parameters: {},
@@ -255,7 +255,7 @@ window.restartHyperion = () => {
 function saveSettings(config) {
   /* eslint-disable no-undef */
   webOS.service.request(
-    'luna://org.webosbrew.piccap.service',
+    'luna://org.webosbrew.piccap-plus.service',
     {
       method: 'setSettings',
       parameters: config,
@@ -431,7 +431,7 @@ window.startStopLogging = () => {
     {
       method: 'exec',
       parameters: {
-        command: '/media/developer/apps/usr/palm/services/org.webosbrew.piccap.service/setuplegacylogging.sh',
+        command: '/media/developer/apps/usr/palm/services/org.webosbrew.piccap-plus.service/setuplegacylogging.sh',
       },
       onSuccess: onHBExec,
       onFailure: onHBExec,
@@ -467,7 +467,7 @@ window.serviceStart = () => {
     document.getElementById('txtInfoState').innerHTML = 'Sending start command';
     /* eslint-disable no-undef */
     webOS.service.request(
-      'luna://org.webosbrew.piccap.service',
+      'luna://org.webosbrew.piccap-plus.service',
       {
         method: 'start',
         parameters: {},
@@ -489,7 +489,7 @@ window.serviceStop = () => {
     document.getElementById('txtInfoState').innerHTML = 'Sending stop command';
     /* eslint-disable no-undef */
     webOS.service.request(
-      'luna://org.webosbrew.piccap.service',
+      'luna://org.webosbrew.piccap-plus.service',
       {
         method: 'stop',
         parameters: {},
