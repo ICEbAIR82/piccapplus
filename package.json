@@ -1,6 +1,6 @@
 {
   "name": "org.webosbrew.piccapplus",
-  "version": "0.5.100",
+  "version": "0.5.300",
   "description": "PicCap-Plus Hyperion Sender & WebUI",
   "main": "index.html",
   "scripts": {
