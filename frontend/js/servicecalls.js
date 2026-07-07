@@ -1,5 +1,9 @@
 require('core-js/stable');
 
+const QRCode = require('qrcode');
+
+const WEBUI_PORT = 8090;
+
 const availableQuirks = {
   // DILE_VT
   QUIRK_DILE_VT_CREATE_EX: '0x1',
@@ -80,6 +84,12 @@ function onCheckRootStatus(result) {
       isRoot = true;
       clearInterval(checkRootStatusIntervalID);
       rootingInProgress = false;
+      // Load settings the moment we know we're rooted, instead of waiting for
+      // a second, independent 3s poll loop to notice isRoot flipped.
+      // getSettings is a hoisted function declaration (defined further down
+      // in this file), so this is safe at runtime despite the lint rule.
+      /* eslint-disable-next-line no-use-before-define */
+      getSettings();
     } else {
       if (rootingInProgress === false) {
         logIt('Rooting not in progress yet.');
@@ -99,8 +109,8 @@ function checkRoot() {
   document.getElementById('txtServiceStatus').innerHTML = 'Processing root check';
   logIt('Starting loop for PicCap-Service to get root-status');
 
-  let firstInterval = true;
-  checkRootStatusIntervalID = window.setInterval(() => {
+  let firstCall = true;
+  const check = () => {
     logIt('Calling PicCap-Service to get root-status');
     document.getElementById('txtInfoState').innerHTML = 'Checking root status';
     /* eslint-disable no-undef */
@@ -115,13 +125,18 @@ function checkRoot() {
     );
     /* eslint-enable no-undef */
 
-    if (rootingInProgress === false && isRoot === false && firstInterval === false) {
+    if (rootingInProgress === false && isRoot === false && firstCall === false) {
       logIt('Not rooted and rooting not in progress yet.');
       makeServiceRoot();
       rootingInProgress = true;
     }
-    firstInterval = false;
-  }, 3000);
+    firstCall = false;
+  };
+
+  // Check immediately instead of waiting out a full interval tick first -
+  // that alone used to add a very noticeable delay before anything showed up.
+  check();
+  checkRootStatusIntervalID = window.setInterval(check, 3000);
 }
 
 function getStatus() {
@@ -142,6 +157,12 @@ function getStatus() {
           document.getElementById('txtInfoUI').innerHTML = result.uiRunning ? `Capturing with ${result.uiBackend}` : 'Not capturing';
           document.getElementById('txtInfoFPS').innerHTML = result.framerate.toFixed(2); /* Round to 2 decimal points */
 
+          if (result.isRunning === true) {
+            document.getElementById('ambilightIndicator').classList.add('running');
+          } else {
+            document.getElementById('ambilightIndicator').classList.remove('running');
+          }
+
           document.getElementById('txtInfoState').innerHTML = 'Status info refreshed';
         } else {
           logIt('Getting status info from PicCap-Service failed! Return value false!');
@@ -151,6 +172,44 @@ function getStatus() {
       onFailure(result) {
         logIt(`Getting status info from PicCap-Service failed! Code: ${result.errorCode}`);
         document.getElementById('txtInfoState').innerHTML = 'Getting status info failed!';
+      },
+    },
+  );
+  /* eslint-enable no-undef */
+}
+
+function showWebUiQrCode(ipAddress) {
+  const url = `http://${ipAddress}:${WEBUI_PORT}/`;
+
+  QRCode.toCanvas(document.getElementById('webuiQrCanvas'), url, { width: 380, margin: 2 }, (err) => {
+    if (err) {
+      logIt(`Failed to render web UI QR code: ${err}`);
+    }
+  });
+  document.getElementById('webuiQrUrl').innerHTML = url;
+}
+
+function detectWebUiAddress() {
+  /* eslint-disable no-undef */
+  webOS.service.request(
+    'luna://com.webos.service.connectionmanager',
+    {
+      method: 'getStatus',
+      parameters: {},
+      onSuccess(result) {
+        const ipAddress = (result.wired && result.wired.state === 'connected' && result.wired.ipAddress)
+          || (result.wifi && result.wifi.state === 'connected' && result.wifi.ipAddress);
+
+        if (ipAddress) {
+          showWebUiQrCode(ipAddress);
+        } else {
+          logIt('detectWebUiAddress: no connected network interface with an IP address found.');
+          document.getElementById('webuiQrUrl').innerHTML = 'Could not detect TV IP address. Check Network settings.';
+        }
+      },
+      onFailure(result) {
+        logIt(`detectWebUiAddress failed! Code: ${result.errorCode}`);
+        document.getElementById('webuiQrUrl').innerHTML = 'Could not detect TV IP address. Check Network settings.';
       },
     },
   );
@@ -529,17 +588,11 @@ window.addEventListener('load', () => {
   logIt('Startup of PicCap...');
   checkRoot();
 
-  logIt('Starting load settings loop...');
-  const getStatusIntervalID = window.setInterval(() => {
-    if (isRoot === true) {
-      logIt('Loading settings, we are rooted.');
-      getSettings();
-      clearInterval(getStatusIntervalID);
-    }
-  }, 3000);
-
   logIt('Starting status loop...');
+  getStatus();
   setInterval(() => {
     getStatus();
   }, 4000);
+
+  detectWebUiAddress();
 });

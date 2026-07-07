@@ -5,17 +5,79 @@
   font-family: 'Poppins',sans-serif;
 }
 
+/* One strong, consistent focus indicator for the whole app so it's always
+   obvious which element the remote currently has selected. */
+:focus {
+  outline: 4px solid #ffcc00 !important;
+  outline-offset: 3px;
+}
+
 ::selection{
   background: #fff;
   color: #000;
 }
 
+html, body {
+  background: #3e3e3e;
+}
+
+/* Persistent screen-edge frame, split into 8 colored segments, so it's
+   obvious at a glance whether the ambilight capture is currently running.
+   Deliberately built with only opacity + transition (no filter/@keyframes):
+   this project's browserslist targets "chrome 38" with no autoprefixer in
+   the webpack pipeline, so anything relying on unprefixed CSS filters or
+   animations is a real risk of silently not rendering on the actual target
+   webOS engine. Plain opacity toggling is safe everywhere. */
+.ambilightIndicator {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  pointer-events: none;
+  opacity: 0.18;
+  transition: opacity 0.6s ease;
+}
+
+.ambilightIndicator.running {
+  opacity: 1;
+}
+
+.ambSeg {
+  position: absolute;
+}
+
+#ambSeg1 { top: 0; left: 0; width: 50%; height: 60px; background: #e53935; }
+#ambSeg2 { top: 0; right: 0; width: 50%; height: 60px; background: #fb8c00; }
+#ambSeg3 { top: 0; right: 0; width: 60px; height: 50%; background: #fdd835; }
+#ambSeg4 { bottom: 0; right: 0; width: 60px; height: 50%; background: #43a047; }
+#ambSeg5 { bottom: 0; right: 0; width: 50%; height: 60px; background: #00acc1; }
+#ambSeg6 { bottom: 0; left: 0; width: 50%; height: 60px; background: #1e88e5; }
+#ambSeg7 { bottom: 0; left: 0; width: 60px; height: 50%; background: #5e35b1; }
+#ambSeg8 { top: 0; left: 0; width: 60px; height: 50%; background: #d81b60; }
+
 .menu .logo p{
   display: inline;
 }
 
-nav{
+/* Keeps all app content inset from the ambilight border so the border never
+   overlaps it. nav/.status use position:absolute (not fixed) so they're
+   positioned relative to this wrapper instead of the raw viewport. */
+.appContent {
   position: fixed;
+  top: 60px;
+  right: 60px;
+  bottom: 60px;
+  left: 60px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+nav{
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   z-index: 12;
 }
@@ -27,12 +89,15 @@ nav{
   justify-content: space-between;
   padding: 10px 100px 10px;
   transition: all 0.3s ease;
+  background: #3e3e3e;
+  border-bottom: 1px solid #555;
 }
 
 .menu .logo p{
   text-decoration: none;
   font-size: 35px;
   font-weight: 600;
+  color: #fff;
 }
 
 .menu ul{
@@ -54,13 +119,29 @@ nav{
   font-weight: 500;
   padding: 8px 15px;
   transition: all 0.3s ease;
+  color: #fff;
+  border-radius: 5px;
+  border-style: none;
+  background: none;
+}
+
+.menu ul li button:hover{
+  background: #fff;
+  color: black;
+}
+
+.menu :focus {
+  border-radius: 3px;
 }
 
 .background{
   position: absolute;
+  top: 0;
+  left: 0;
   height: 100%;
   width: 100%;
   transition: all 0.3s ease;
+  background: #3e3e3e;
 }
 
 .main{
@@ -76,6 +157,7 @@ nav{
 .main .title{
   font-size: 55px;
   font-weight: 600;
+  color: #fff;
 }
 
 .main .title p{
@@ -85,6 +167,7 @@ nav{
 .main .sub_title{
   font-size: 32px;
   font-weight: 600;
+  color: #fff;
 }
 
 .main .btns{
@@ -100,14 +183,59 @@ nav{
   padding: 0 10px;
   cursor: pointer;
   transition: all 0.3s ease;
+  border-radius: 5px;
+  border: 2px solid white;
+  outline: none;
+  background: none;
+  color: #fff;
 }
 
-.service {
+.main .btns button:hover{
+  background: white;
+  color: black;
+}
+
+.main button:focus {
+  background: white;
+  color: black;
+}
+
+.main button:active {
+  background: lightgray;
+}
+
+.home {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+}
+
+.home .service,
+.home .settings {
+  flex: 1 1 0;
+  min-width: 0;
   display: block;
+  /* flexbox `gap` isn't supported on this project's old target browser
+     (browserslist: chrome 38), so spacing is done via margin instead */
+  margin: 0 30px;
 }
 
-.settings {
-  display: none;
+.webuiQr {
+  margin-top: 25px;
+}
+
+.webuiQr p {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.webuiQr canvas {
+  background: #fff;
+  padding: 10px;
+  border-radius: 8px;
 }
 
 .logs {
@@ -119,15 +247,14 @@ nav{
 }
 
 .status {
-  position: fixed;
+  position: absolute;
   bottom: 0;
+  left: 0;
   width: 100%;
   padding: 10px 10px;
   transition: all 0.3s ease;
-}
-
-.status .lightMode{
-  display: inline-table;
+  background: #3e3e3e;
+  border-top: 1px solid #555;
 }
 
 .status .info {
@@ -141,22 +268,7 @@ nav{
   display: inline;
   text-align: right;
   font-size: 17px;
-}
-
-.lightMode button {
-  display: inline-block;
-  padding: 1px 6px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  margin: 0 1px;
-  transition: all 0.3s ease;
-}
-
-.lightMode img {
-  width: 20px;
-  height: 20px;
-  margin: 0px 0px -3px 0px;
+  color: #fff;
 }
 
 #txtPicCapVersion {
@@ -171,10 +283,6 @@ nav{
   font-weight: 600;
 }
 
-.settings {
-  margin-left: 15%;
-  margin-right: 15%;
-}
 .advSettingitems {
   display: none;
 }
@@ -195,6 +303,7 @@ nav{
   font-size: 20px;
   font-weight: 500;
   margin-bottom: 2px;
+  color: #fff;
 }
 .settingItems ul{
   display: inline-flex;
@@ -214,6 +323,38 @@ nav{
   min-width: 150px;
   padding: 0 20px;
   font-size: 15px;
+  background: #fff;
+  color: #000;
+}
+
+.settingItems input[type="checkbox"]{
+  height: 25px;
+  width: 25px;
+  padding: 0 20px;
+  vertical-align: middle;
+  margin-left: 7px;
+  margin-bottom: 4px;
+  border-style: none;
+  border-radius: 5px;
+}
+
+.settingItems select{
+  height: 30px;
+  min-width: 230px;
+  padding: 0 20px;
+  font-size: 15px;
+  border-style: none;
+  border-radius: 5px;
+  background-color: #fff;
+  color: #000;
+}
+
+.settingItems :focus{
+  border-radius: 2px;
+}
+
+.settingItems button:active{
+  background: lightgray;
 }
 
 .checkboxes{
@@ -224,22 +365,7 @@ nav{
 .checklabel label{
   font-size: 19px;
   font-weight: 500;
-}
-
-.settingItems input[type="checkbox"]{
-  height: 25px;
-  width: 25px;
-  padding: 0 20px;
-  vertical-align: middle;
-  margin-left: 7px;
-  margin-bottom: 4px;
-}
-
-.settingItems select{
-  height: 30px;
-  min-width: 230px;
-  padding: 0 20px;
-  font-size: 15px;
+  color: #fff;
 }
 
 .manualres {
@@ -269,14 +395,30 @@ nav{
    align-items:center;
 }
 
+.About .sub_title {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+
 .aboutItems {
   text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
 }
 .aboutItems p{
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 500;
-  margin-bottom: 15px;
+  margin-bottom: 6px;
   text-align: center;
+  color: #fff;
+}
+
+.aboutItems a{
+  color: white;
+}
+
+.aboutItems :focus {
+  border-radius: 3px;
 }
 
 .aboutItems ul{
@@ -310,6 +452,13 @@ nav{
   resize: none;
   width: 95%;
   height: 500px;
+  color: white;
+  background-color: #2c2c2c;
+  border: 1px solid white;
+}
+
+.logBox textarea:focus{
+  background-color: #2c2c2c;
 }
 
 .consoleLog {

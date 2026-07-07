@@ -25,6 +25,7 @@
     "@babel/preset-env": "^7.18.10",
     "bluebird": "^3.7.2",
     "core-js": "^3.24.1",
+    "qrcode": "^1.5.4",
     "regenerator-runtime": "^0.13.9",
     "webos-service": "git+https://github.com/webosose/nodejs-module-webos-service.git"
   },

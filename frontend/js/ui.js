@@ -1,35 +1,20 @@
 import packageJSON from '../../package.json';
 
-function logIt(message) {
-  const textareaConsoleLog = document.getElementById('textareaConsoleLog');
-  console.log(message);
-  textareaConsoleLog.value += `${message}\n`;
-}
-
 /* eslint-disable func-names */
 window.switchView = function (view) {
-  const service = document.getElementById('service');
-  const settings = document.getElementById('settings');
+  const home = document.getElementById('home');
   const logs = document.getElementById('logs');
   const about = document.getElementById('about');
 
-  const btnservice = document.getElementById('btnNavService');
-  const btnsettings = document.getElementById('btnNavSettings');
+  const btnhome = document.getElementById('btnNavHome');
   const btnlogs = document.getElementById('btnNavLogs');
   const btnabout = document.getElementById('btnNavAbout');
 
-  const settingItemsAdv = document.getElementById('settingItemsAdv');
-  const settingItemsNormal = document.getElementById('settingItemsNormal');
-  const btnAdvanced = document.getElementById('btnSettingsAdvanced');
   switch (view) {
-    case 'service':
-      service.style.display = 'block';
-      btnservice.style.background = 'white';
-      btnservice.style.color = 'black';
-
-      settings.style.display = 'none';
-      btnsettings.style.background = null;
-      btnsettings.style.color = null;
+    case 'home':
+      home.style.display = 'flex';
+      btnhome.style.background = 'white';
+      btnhome.style.color = 'black';
 
       logs.style.display = 'none';
       btnlogs.style.background = null;
@@ -38,38 +23,11 @@ window.switchView = function (view) {
       about.style.display = 'none';
       btnabout.style.background = null;
       btnabout.style.color = null;
-      break;
-    case 'settings':
-      service.style.display = 'none';
-      btnservice.style.background = null;
-      btnservice.style.color = null;
-
-      settings.style.display = 'block';
-      btnsettings.style.background = 'white';
-      btnsettings.style.color = 'black';
-
-      logs.style.display = 'none';
-      btnlogs.style.background = null;
-      btnlogs.style.color = null;
-
-      about.style.display = 'none';
-      btnabout.style.background = null;
-      btnabout.style.color = null;
-
-      // Open non advanced page
-      btnAdvanced.style.background = null;
-      btnAdvanced.style.color = null;
-      settingItemsNormal.style.display = 'block';
-      settingItemsAdv.style.display = 'none';
       break;
     case 'logs':
-      service.style.display = 'none';
-      btnservice.style.background = null;
-      btnservice.style.color = null;
-
-      settings.style.display = 'none';
-      btnsettings.style.background = null;
-      btnsettings.style.color = null;
+      home.style.display = 'none';
+      btnhome.style.background = null;
+      btnhome.style.color = null;
 
       logs.style.display = 'block';
       btnlogs.style.background = 'white';
@@ -80,13 +38,9 @@ window.switchView = function (view) {
       btnabout.style.color = null;
       break;
     case 'about':
-      service.style.display = 'none';
-      btnservice.style.background = null;
-      btnservice.style.color = null;
-
-      settings.style.display = 'none';
-      btnsettings.style.background = null;
-      btnsettings.style.color = null;
+      home.style.display = 'none';
+      btnhome.style.background = null;
+      btnhome.style.color = null;
 
       logs.style.display = 'none';
       btnlogs.style.background = null;
@@ -97,11 +51,10 @@ window.switchView = function (view) {
       btnabout.style.color = 'black';
       break;
     default:
-      service.style.display = null;
-      btnservice.style.background = null;
-      btnservice.style.color = null;
+      home.style.display = null;
+      btnhome.style.background = null;
+      btnhome.style.color = null;
 
-      settings.style.display = null;
       logs.style.display = null;
       about.style.display = null;
       break;
@@ -169,70 +122,8 @@ window.switchLog = function (location) {
 };
 
 /* eslint-enable func-names */
-function saveLightMode(color) {
-  logIt(`Saving ${color} as light mode.`);
-  localStorage.setItem('lightMode', color);
-}
 
 /* eslint-disable func-names */
-window.switchLightMode = function (color) {
-  const btnLightBlue = document.getElementById('btnLightBlue');
-  const btnLightDark = document.getElementById('btnLightDark');
-  const btnLightBlack = document.getElementById('btnLightBlack');
-
-  switch (color) {
-    case 'blue':
-      btnLightBlue.style.background = 'white';
-      btnLightBlue.style.color = 'black';
-      btnLightDark.style.background = null;
-      btnLightDark.style.color = null;
-      btnLightBlack.style.background = null;
-      btnLightBlack.style.color = null;
-      document.querySelectorAll('.darkMode, .blackMode').forEach((elem) => elem.classList.add('blueMode'));
-      document.querySelectorAll('.darkMode').forEach((elem) => elem.classList.remove('darkMode'));
-      document.querySelectorAll('.blackMode').forEach((elem) => elem.classList.remove('blackMode'));
-      saveLightMode('blue');
-      break;
-    case 'dark':
-      btnLightBlue.style.background = null;
-      btnLightBlue.style.color = null;
-      btnLightDark.style.background = 'white';
-      btnLightDark.style.color = 'black';
-      btnLightBlack.style.background = null;
-      btnLightBlack.style.color = null;
-      document.querySelectorAll('.blueMode, .blackMode').forEach((elem) => elem.classList.add('darkMode'));
-      document.querySelectorAll('.blueMode').forEach((elem) => elem.classList.remove('blueMode'));
-      document.querySelectorAll('.blackMode').forEach((elem) => elem.classList.remove('blackMode'));
-      saveLightMode('dark');
-      break;
-    case 'black':
-      btnLightBlue.style.background = null;
-      btnLightBlue.style.color = null;
-      btnLightDark.style.background = null;
-      btnLightDark.style.color = null;
-      btnLightBlack.style.background = 'white';
-      btnLightBlack.style.color = 'black';
-      document.querySelectorAll('.blueMode, .darkMode').forEach((elem) => elem.classList.add('blackMode'));
-      document.querySelectorAll('.blueMode').forEach((elem) => elem.classList.remove('blueMode'));
-      document.querySelectorAll('.darkMode').forEach((elem) => elem.classList.remove('darkMode'));
-      saveLightMode('black');
-      break;
-    default:
-      logIt(`${color} not found. Using blue as default.`);
-      /* eslint-disable no-undef */
-      switchLightMode('blue');
-      /* eslint-enable no-undef */
-      break;
-  }
-};
-
-function loadLightMode() {
-  const lightMode = localStorage.getItem('lightMode');
-  /* eslint-disable no-undef */
-  switchLightMode(lightMode);
-  /* eslint-enable no-undef */
-}
-
 function getJSON(url, callback) {
   const xhr = new XMLHttpRequest();
   xhr.open('GET', url, true);
@@ -299,12 +190,77 @@ function getContributors(owner, repo) {
 getContributors('webosbrew', 'hyperion-webos');
 getContributors('tbsniller', 'piccap');
 
+// Text inputs are readonly by default so simply passing over them with the
+// remote's D-pad doesn't pop up the on-screen keyboard. Pressing OK/Enter (or
+// clicking) makes the field editable and re-focuses it to actually trigger
+// the keyboard; pressing OK/Enter again (or leaving the field) exits edit
+// mode and gives focus back so the D-pad can move on.
+//
+// Note this is NOT just cosmetic: the spatial-navigation polyfill's own
+// arrow-key handling (handlingEditableElement) treats any focused
+// type="text" input as a real text-cursor widget regardless of our readOnly
+// flag - left/up only navigate away once the caret is at position 0, right/
+// down only once it's at the end. So merely flipping readOnly back to true
+// while STILL focused would not free up the D-pad at all; the field has to
+// actually lose focus (blur()) for normal spatial navigation to resume in
+// every direction.
+/* eslint-disable no-param-reassign */
+function setupDeferredKeyboardInputs() {
+  const enterEditMode = (input) => {
+    // Must stay synchronous (no requestAnimationFrame/setTimeout): webOS only
+    // shows the on-screen keyboard on a focus() call that happens within the
+    // original user-gesture (keydown/click) callstack.
+    // blur() fires its listener synchronously, so without this flag it would
+    // immediately re-set readOnly=true again before focus() below ever runs,
+    // silently undoing this whole function and leaving the field stuck.
+    input.dataset.ignoreBlur = 'true';
+    input.readOnly = false;
+    input.blur();
+    input.focus();
+  };
+
+  const exitEditMode = (input) => {
+    input.readOnly = true;
+    input.blur();
+  };
+
+  document.querySelectorAll('input[type="text"]').forEach((input) => {
+    input.readOnly = true;
+
+    input.addEventListener('keydown', (e) => {
+      if (e.keyCode !== 13) return;
+      e.preventDefault();
+      if (input.readOnly) {
+        enterEditMode(input);
+      } else {
+        exitEditMode(input);
+      }
+    });
+
+    input.addEventListener('click', () => {
+      if (input.readOnly) {
+        enterEditMode(input);
+      }
+    });
+
+    input.addEventListener('blur', () => {
+      if (input.dataset.ignoreBlur === 'true') {
+        delete input.dataset.ignoreBlur;
+        return;
+      }
+      input.readOnly = true;
+    });
+  });
+}
+/* eslint-enable no-param-reassign */
+
 window.addEventListener('load', () => {
   /* eslint-disable no-undef */
-  switchView('service');
+  switchView('home');
   switchLog('piccap');
-  loadLightMode();
   /* eslint-enable no-undef */
+
+  setupDeferredKeyboardInputs();
 
   const piccapVersion = packageJSON.version;
   document.getElementById('txtPicCapVersion').innerHTML = `v${piccapVersion}`;

@@ -26,6 +26,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, './build/piccap-frontend/'),
     filename: './[name].bundled.js',
+    clean: true,
   },
   performance: {
     maxAssetSize: 1000000
