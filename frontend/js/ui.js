@@ -79,6 +79,11 @@ window.socketSelectChanged = function (elem) {
   document.getElementById('manualsocket').style.display = elem.value === 'manual' ? 'inline' : 'none';
 };
 
+window.directWledChanged = function (elem) {
+  document.getElementById('wledoutputsettings').style.display = elem.checked ? 'flex' : 'none';
+  document.getElementById('hyperionreceiversettings').style.display = elem.checked ? 'none' : 'block';
+};
+
 window.toggleAdvanced = function () {
   const settingItemsAdv = document.getElementById('settingItemsAdv');
   const settingItemsNormal = document.getElementById('settingItemsNormal');

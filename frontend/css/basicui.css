@@ -27,7 +27,8 @@ html, body {
    this project's browserslist targets "chrome 38" with no autoprefixer in
    the webpack pipeline, so anything relying on unprefixed CSS filters or
    animations is a real risk of silently not rendering on the actual target
-   webOS engine. Plain opacity toggling is safe everywhere. */
+   webOS engine. Plain opacity toggling is safe everywhere. Colors are fixed
+   hex, not hsl()/hsla(), for the same old-WebKit-safety reason. */
 .ambilightIndicator {
   position: fixed;
   top: 0;
@@ -48,14 +49,29 @@ html, body {
   position: absolute;
 }
 
-#ambSeg1 { top: 0; left: 0; width: 50%; height: 60px; background: #e53935; }
-#ambSeg2 { top: 0; right: 0; width: 50%; height: 60px; background: #fb8c00; }
-#ambSeg3 { top: 0; right: 0; width: 60px; height: 50%; background: #fdd835; }
-#ambSeg4 { bottom: 0; right: 0; width: 60px; height: 50%; background: #43a047; }
-#ambSeg5 { bottom: 0; right: 0; width: 50%; height: 60px; background: #00acc1; }
-#ambSeg6 { bottom: 0; left: 0; width: 50%; height: 60px; background: #1e88e5; }
-#ambSeg7 { bottom: 0; left: 0; width: 60px; height: 50%; background: #5e35b1; }
-#ambSeg8 { top: 0; left: 0; width: 60px; height: 50%; background: #d81b60; }
+/* One segment per screen edge, each a fully-saturated primary that's about
+   as far from the other three as colors get - simpler and easier to read at
+   a glance than the earlier 8-segment rainbow. */
+#ambSegTop    { top: 0; left: 0; right: 0; height: 60px; background: #ff0000; }
+#ambSegRight  { top: 0; right: 0; bottom: 0; width: 60px; background: #ffff00; }
+#ambSegBottom { bottom: 0; left: 0; right: 0; height: 60px; background: #00ff00; }
+#ambSegLeft   { top: 0; left: 0; bottom: 0; width: 60px; background: #0000ff; }
+
+/* All 4 corners share one identical, neutral landmark color (painted over the
+   spot where two edge segments would otherwise overlap) instead of each
+   edge's color fighting for the corner - white reads clearly against every
+   one of the 4 saturated edge colors above. */
+.ambCorner {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: #ffffff;
+}
+
+#ambCornerTL { top: 0; left: 0; }
+#ambCornerTR { top: 0; right: 0; }
+#ambCornerBR { bottom: 0; right: 0; }
+#ambCornerBL { bottom: 0; left: 0; }
 
 .menu .logo p{
   display: inline;
@@ -382,6 +398,18 @@ nav{
 
 .settingaddressport {
   display: flex
+}
+
+/* Direct-WLED vs. legacy-Hyperion output settings: exactly one of the two
+   groups is visible, toggled by the "Direct WLED output" checkbox
+   (directWledChanged in ui.js). Defaults match the service's
+   direct_led_output=true default until getSettings() syncs the real value. */
+.wledoutput {
+  display: flex;
+}
+
+.hyperionreceiver {
+  display: none;
 }
 
 .avatars img{

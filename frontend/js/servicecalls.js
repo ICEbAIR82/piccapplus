@@ -16,6 +16,23 @@ const availableQuirks = {
 let isRoot = false;
 let rootingInProgress = false;
 
+// Tracks whether the user has changed a settings-form control locally without
+// saving yet, so the periodic getSettings() refresh (added to pick up changes
+// made through the browser-based web UI while this app is open) doesn't clobber
+// an in-progress, unsaved edit.
+let settingsDirty = false;
+
+// Text inputs on this remote-controlled UI are readOnly except while a D-pad OK
+// press has put them into edit mode (see setupDeferredKeyboardInputs in ui.js).
+// A background settings refresh must not overwrite the field the user is
+// currently typing into.
+function isEditingSettingsField() {
+  return Array.prototype.some.call(
+    document.querySelectorAll('#settings input[type="text"]'),
+    (input) => input.readOnly === false,
+  );
+}
+
 function logIt(message) {
   const textareaConsoleLog = document.getElementById('textareaConsoleLog');
   console.log(message);
@@ -150,9 +167,13 @@ function getStatus() {
       onSuccess(result) {
         if (result.returnValue === true) {
           document.getElementById('txtServiceVersion').innerHTML = result.version;
-          document.getElementById('txtServiceStatus').innerHTML = result.isRunning ? 'Capturing' : 'Not capturing';
+          document.getElementById('txtServiceStatus').innerHTML = result.isRunning
+            ? (result.directOutput ? `Streaming to WLED ${result.wledAddress}` : 'Capturing')
+            : 'Not capturing';
 
-          document.getElementById('txtInfoReceiver').innerHTML = result.connected ? 'Connected' : 'Disconnected';
+          document.getElementById('txtInfoReceiver').innerHTML = result.directOutput
+            ? `WLED ${result.wledAddress} (DDP)`
+            : (result.connected ? 'Connected' : 'Disconnected');
           document.getElementById('txtInfoVideo').innerHTML = result.videoRunning ? `Capturing with ${result.videoBackend}` : 'Not capturing';
           document.getElementById('txtInfoUI').innerHTML = result.uiRunning ? `Capturing with ${result.uiBackend}` : 'Not capturing';
           document.getElementById('txtInfoFPS').innerHTML = result.framerate.toFixed(2); /* Round to 2 decimal points */
@@ -229,6 +250,11 @@ function getSettings() {
           document.getElementById('selectSettingsVideoBackend').value = result.novideo === true ? 'disabled' : result.backend || 'auto';
           document.getElementById('selectSettingsGraphicalBackend').value = result.nogui === true ? 'disabled' : result.uibackend || 'auto';
 
+          document.getElementById('checkSettingsDirectWled').checked = result.directledoutput === true;
+          directWledChanged(document.getElementById('checkSettingsDirectWled'));
+          document.getElementById('txtInputSettingsWledAddress').value = result.wledaddress || '';
+          document.getElementById('txtInputSettingsWledPort').value = result.wledport;
+
           document.getElementById('checkSettingsLocalSocket').checked = result['unix-socket'];
           socketCheckChanged(document.getElementById('checkSettingsLocalSocket'));
 
@@ -290,6 +316,7 @@ function getSettings() {
           document.getElementById('checkSettingsNoPowerstate').checked = result.nopowerstate;
           document.getElementById('checkSettingsNV12').checked = result.nv12;
 
+          settingsDirty = false;
           logIt('Loading settings done!');
           document.getElementById('txtInfoState').innerHTML = 'Settings loaded';
         } else {
@@ -359,6 +386,10 @@ window.serviceResetSettings = () => {
     vsync: true,
     autostart: false,
     nv12: false,
+
+    directledoutput: true,
+    wledaddress: '172.16.24.60',
+    wledport: 4048,
   };
   logIt(config);
 
@@ -450,6 +481,10 @@ window.serviceSaveSettings = () => {
     nohdr: document.getElementById('checkSettingsNoHDR').checked,
     nopowerstate: document.getElementById('checkSettingsNoPowerstate').checked,
     nv12: document.getElementById('checkSettingsNV12').checked,
+
+    directledoutput: document.getElementById('checkSettingsDirectWled').checked,
+    wledaddress: document.getElementById('txtInputSettingsWledAddress').value,
+    wledport: parseInt(document.getElementById('txtInputSettingsWledPort').value, 10) || undefined,
 };
 
   logIt(`Config: ${JSON.stringify(config)}`);
@@ -592,6 +627,21 @@ window.addEventListener('load', () => {
   getStatus();
   setInterval(() => {
     getStatus();
+  }, 4000);
+
+  // Settings can also be changed through the browser-based web UI (served by
+  // hyperion-webos's own HTTP server) while this app is sitting open on the
+  // TV. Without this, those changes would only ever show up here after a
+  // manual reload. Skipped while the user has an unsaved local edit pending,
+  // or is mid-edit on a text field, so this can't clobber their own in-flight
+  // change.
+  const settingsContainer = document.getElementById('settings');
+  settingsContainer.addEventListener('input', () => { settingsDirty = true; });
+  settingsContainer.addEventListener('change', () => { settingsDirty = true; });
+  setInterval(() => {
+    if (isRoot && !settingsDirty && !isEditingSettingsField()) {
+      getSettings();
+    }
   }, 4000);
 
   detectWebUiAddress();

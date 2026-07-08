@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PicCap - Hyperion Sender App</title>
+    <title>PicCap-Plus - Hyperion Sender App</title>
     <script src="webOSTVjs-1.2.4/webOSTV.js" charset="utf-8"></script>
     <script src="webOSTVjs-1.2.4/webOSTV-dev.js" charset="utf-8"></script>
     <script type="text/javascript" src="./ui.bundled.js"></script>
@@ -13,20 +13,20 @@
    </head>
   <body>
     <div class="ambilightIndicator" id="ambilightIndicator">
-      <div class="ambSeg" id="ambSeg1"></div>
-      <div class="ambSeg" id="ambSeg2"></div>
-      <div class="ambSeg" id="ambSeg3"></div>
-      <div class="ambSeg" id="ambSeg4"></div>
-      <div class="ambSeg" id="ambSeg5"></div>
-      <div class="ambSeg" id="ambSeg6"></div>
-      <div class="ambSeg" id="ambSeg7"></div>
-      <div class="ambSeg" id="ambSeg8"></div>
+      <div class="ambSeg" id="ambSegTop"></div>
+      <div class="ambSeg" id="ambSegRight"></div>
+      <div class="ambSeg" id="ambSegBottom"></div>
+      <div class="ambSeg" id="ambSegLeft"></div>
+      <div class="ambCorner" id="ambCornerTL"></div>
+      <div class="ambCorner" id="ambCornerTR"></div>
+      <div class="ambCorner" id="ambCornerBR"></div>
+      <div class="ambCorner" id="ambCornerBL"></div>
     </div>
     <div class="appContent">
     <nav>
       <div class="menu" id="menu">
         <div class="logo">
-          <p>PicCap - Hyperion Sender App</p><p id="txtPicCapVersion">loading...</p>
+          <p>PicCap-Plus - Hyperion Sender App</p><p id="txtPicCapVersion">loading...</p>
         </div>
         <ul>
           <li><button onclick="switchView('home')" id="btnNavHome">Home</button></li>
@@ -59,7 +59,29 @@
       <div id="settings" class="settings">
         <div class="settingItems settingItemsNormal" id="settingItemsNormal">
           <ul>
-            <li><p><b>Service settings</b></p></li>
+            <li><p><b>Output</b></p></li>
+          </ul><br/>
+          <ul>
+            <li>
+              <div class="checkboxes checklabel">
+                <br>
+               <label for="checkSettingsDirectWled">Direct WLED output (DDP)<input type="checkbox" id="checkSettingsDirectWled" onchange="directWledChanged(this)"/></label>
+              </div>
+            </li>
+            <div class="wledoutput" id="wledoutputsettings">
+              <li>
+                <p>WLED address</p>
+                <input type="text" id="txtInputSettingsWledAddress"/>
+              </li>
+              <li>
+                <p>WLED port</p>
+                <input type="text" id="txtInputSettingsWledPort"/>
+              </li>
+            </div>
+          </ul><br/>
+          <div class="hyperionreceiver" id="hyperionreceiversettings">
+          <ul>
+            <li><p><b>Hyperion receiver (legacy)</b></p></li>
           </ul><br/>
           <ul>
             <li>
@@ -97,6 +119,10 @@
               <p>Hyperion priority</p>
               <input type="text" id="txtInputSettingsPriority"/>
             </li>
+          </ul><br/>
+          </div>
+          <ul>
+            <li><p><b>Capture</b></p></li>
           </ul><br/>
           <ul>
             <li>
@@ -270,7 +296,7 @@
           </ul>
           <ul>
             <li>
-              <p>PicCap is the frontend app, which you have installed on your TV and you can see here, to make things as easy as possible. It ships and controls the seperated hyperion-webos background service, which controls the capture interfaces on your TV based on reverse engineering, proccesses the output and sends the resulting low quality image data to a receiver like Hyperion's flatbuffer server.<br/>On newer TVs there is no official way for capturing DRM-protected content like Netflix or Amazon. This restriction doesn't take place for content comming from an HDMI input.<br/>So currently as a workaround you can play your media using your PC, FireTV-Stick or Chromecast and still enjoy your LEDs.<br/><u>This app requires to be run as root and tries to do this at the first start using the Homebrew Channel.</u></p>
+              <p>None of this works without the original PicCap and hyperion-webos projects underneath it. hyperion-webos is the real heavy lifting: it talks to webOS's own capture internals - undocumented and only usable at all thanks to prior reverse-engineering - to grab a live copy of whatever's currently on screen. PicCap is this on-TV app that turns that into something you can actually configure by pointing a remote at your television, instead of editing files over SSH.<br/>One limitation is inherited as-is and can't really be worked around: webOS refuses to hand over DRM-protected frames from things like Netflix or Amazon Prime Video, while anything arriving over a plain HDMI input is unaffected. So a PC, Fire TV Stick, or Chromecast feeding the TV over HDMI keeps your LEDs working even for DRM'd content.<br/><u>As with the original, this app needs to run as root and will try to get there automatically on first launch via the Homebrew Channel.</u></p>
             </li>
           </ul>
           <ul>
