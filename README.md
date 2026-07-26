@@ -1,9 +1,10 @@
-# PicCap-Plus – Standalone Ambilight for LG webOS TVs
+# PicCap-Plus – Standalone Bias Lighting for LG webOS TVs
 
 PicCap-Plus is a fork of [PicCap](https://github.com/TBSniller/piccap) /
 [hyperion-webos](https://github.com/webosbrew/hyperion-webos) that lets an LG
-webOS TV drive an Ambilight-style LED strip **entirely on its own** – no PC,
-Raspberry Pi, or separate HyperHDR/Hyperion instance required in between.
+webOS TV drive a screen-synced bias-lighting LED strip **entirely on its
+own** – no PC, Raspberry Pi, or separate HyperHDR/Hyperion instance required
+in between.
 
 hyperion-webos still does the heavy lifting: it talks to webOS's own
 (reverse-engineered, undocumented) capture internals to grab a live, low-res

@@ -5,7 +5,7 @@
   "type": "web",
   "main": "index.html",
   "title": "PicCap",
-  "appDescription": "Hyperion Sender App - Ambilight for WebOS",
+  "appDescription": "Hyperion Sender App - Bias lighting for WebOS",
   "icon": "assets/logo_small.png",
   "largeIcon": "assets/logo_big.png",
   "splashBackground": "assets/splash_1080p.png",
