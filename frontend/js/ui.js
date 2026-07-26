@@ -84,23 +84,6 @@ window.directWledChanged = function (elem) {
   document.getElementById('hyperionreceiversettings').style.display = elem.checked ? 'none' : 'block';
 };
 
-window.toggleAdvanced = function () {
-  const settingItemsAdv = document.getElementById('settingItemsAdv');
-  const settingItemsNormal = document.getElementById('settingItemsNormal');
-  const btnAdvanced = document.getElementById('btnSettingsAdvanced');
-  if (settingItemsNormal.style.display === 'block') {
-    btnAdvanced.style.background = 'white';
-    btnAdvanced.style.color = 'black';
-    settingItemsNormal.style.display = 'none';
-    settingItemsAdv.style.display = 'block';
-  } else {
-    btnAdvanced.style.background = null;
-    btnAdvanced.style.color = null;
-    settingItemsNormal.style.display = 'block';
-    settingItemsAdv.style.display = 'none';
-  }
-};
-
 window.switchLog = function (location) {
   const divConsoleLog = document.getElementById('consoleLog');
   const divHyperionLog = document.getElementById('hyperionLog');

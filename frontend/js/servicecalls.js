@@ -166,7 +166,6 @@ function getStatus() {
       parameters: {},
       onSuccess(result) {
         if (result.returnValue === true) {
-          document.getElementById('txtServiceVersion').innerHTML = result.version;
           document.getElementById('txtServiceStatus').innerHTML = result.isRunning
             ? (result.directOutput ? `Streaming to WLED ${result.wledAddress}` : 'Capturing')
             : 'Not capturing';
@@ -182,6 +181,18 @@ function getStatus() {
             document.getElementById('ambilightIndicator').classList.add('running');
           } else {
             document.getElementById('ambilightIndicator').classList.remove('running');
+          }
+
+          // White/color balance calibration: the web UI tells the service to
+          // bring this app to front and show a fullscreen color, but the
+          // actual overlay is driven entirely from here, picked up on the
+          // next regular status poll - no separate push channel needed.
+          const calibrationOverlay = document.getElementById('calibrationOverlay');
+          if (result.calibrationActive === true) {
+            calibrationOverlay.style.background = result.calibrationColor || '#ffffff';
+            calibrationOverlay.classList.add('active');
+          } else {
+            calibrationOverlay.classList.remove('active');
           }
 
           document.getElementById('txtInfoState').innerHTML = 'Status info refreshed';
@@ -315,6 +326,8 @@ function getSettings() {
           document.getElementById('checkSettingsNoHDR').checked = result.nohdr;
           document.getElementById('checkSettingsNoPowerstate').checked = result.nopowerstate;
           document.getElementById('checkSettingsNV12').checked = result.nv12;
+          document.getElementById('checkSettingsLetterboxDetection').checked = result.letterboxdetection;
+          document.getElementById('checkSettingsSceneDimming').checked = result.scenedimming;
 
           settingsDirty = false;
           logIt('Loading settings done!');
@@ -365,6 +378,10 @@ function saveSettings(config) {
 }
 
 window.serviceResetSettings = () => {
+  if (!window.confirm('Reset ALL settings to their defaults and restart? This cannot be undone.')) {
+    return;
+  }
+
   document.getElementById('txtInfoState').innerHTML = 'Loading default settings..';
   const config = {
     backend: 'auto',
@@ -386,6 +403,8 @@ window.serviceResetSettings = () => {
     vsync: true,
     autostart: false,
     nv12: false,
+    letterboxdetection: true,
+    scenedimming: false,
 
     directledoutput: true,
     wledaddress: '172.16.24.60',
@@ -481,6 +500,8 @@ window.serviceSaveSettings = () => {
     nohdr: document.getElementById('checkSettingsNoHDR').checked,
     nopowerstate: document.getElementById('checkSettingsNoPowerstate').checked,
     nv12: document.getElementById('checkSettingsNV12').checked,
+    letterboxdetection: document.getElementById('checkSettingsLetterboxDetection').checked,
+    scenedimming: document.getElementById('checkSettingsSceneDimming').checked,
 
     directledoutput: document.getElementById('checkSettingsDirectWled').checked,
     wledaddress: document.getElementById('txtInputSettingsWledAddress').value,
@@ -554,55 +575,6 @@ function onServiceCallback(result) {
   }
 }
 
-window.serviceStart = () => {
-  logIt('Start clicked');
-  try {
-    document.getElementById('txtServiceStatus').innerHTML = 'Starting service...';
-    document.getElementById('txtInfoState').innerHTML = 'Sending start command';
-    /* eslint-disable no-undef */
-    webOS.service.request(
-      'luna://org.webosbrew.piccapplus.service',
-      {
-        method: 'start',
-        parameters: {},
-        onSuccess: onServiceCallback,
-        onFailure: onServiceCallback,
-      },
-    );
-    /* eslint-enable no-undef */
-  } catch (err) {
-    document.getElementById('txtServiceStatus').innerHTML = `Failed: ${JSON.stringify(err)}`;
-  }
-  document.getElementById('txtInfoState').innerHTML = 'Start command send';
-};
-
-window.serviceStop = () => {
-  logIt('Stop clicked');
-  try {
-    document.getElementById('txtServiceStatus').innerHTML = 'Stopping service...';
-    document.getElementById('txtInfoState').innerHTML = 'Sending stop command';
-    /* eslint-disable no-undef */
-    webOS.service.request(
-      'luna://org.webosbrew.piccapplus.service',
-      {
-        method: 'stop',
-        parameters: {},
-        onSuccess: onServiceCallback,
-        onFailure: onServiceCallback,
-      },
-    );
-    /* eslint-enable no-undef */
-  } catch (err) {
-    document.getElementById('txtServiceStatus').innerHTML = `Failed: ${JSON.stringify(err)}`;
-  }
-  document.getElementById('txtInfoState').innerHTML = 'Stop command send';
-};
-
-window.serviceReload = () => {
-  logIt('Reload clicked');
-  getSettings();
-};
-
 window.tvReboot = () => {
   logIt('Trying to reboot TV using HBChannel..');
   document.getElementById('txtInfoState').innerHTML = 'Rebooting TV..';
@@ -645,4 +617,31 @@ window.addEventListener('load', () => {
   }, 4000);
 
   detectWebUiAddress();
+
+  // While the fullscreen white/color-balance calibration overlay is showing,
+  // any remote key press exits it - otherwise the only way out was via the
+  // web UI's "Stop calibration" button, stranding whoever's holding the
+  // actual remote in front of the TV. Hides the overlay immediately for
+  // instant feedback instead of waiting for the next 4s status poll, and
+  // tells the service so the next poll (from this app or the web UI) agrees.
+  document.addEventListener('keydown', (e) => {
+    const calibrationOverlay = document.getElementById('calibrationOverlay');
+    if (!calibrationOverlay.classList.contains('active')) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    calibrationOverlay.classList.remove('active');
+
+    /* eslint-disable no-undef */
+    webOS.service.request(
+      'luna://org.webosbrew.piccapplus.service',
+      {
+        method: 'stopCalibration',
+        parameters: {},
+        onSuccess: onServiceCallback,
+        onFailure: onServiceCallback,
+      },
+    );
+    /* eslint-enable no-undef */
+  });
 });

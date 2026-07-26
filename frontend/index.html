@@ -22,6 +22,7 @@
       <div class="ambCorner" id="ambCornerBR"></div>
       <div class="ambCorner" id="ambCornerBL"></div>
     </div>
+    <div class="calibrationOverlay" id="calibrationOverlay"></div>
     <div class="appContent">
     <nav>
       <div class="menu" id="menu">
@@ -39,16 +40,7 @@
     <div class="main">
       <div id="home" class="home">
       <div id="service" class="service">
-        <div class="title"><p>hyperion-webos</p><p id="txtServiceVersion">loading..</p>
-        </div>
         <div class="sub_title" id="txtServiceStatus">Loading status..</div>
-        <div class="btns">
-          <button onclick="serviceStart()" id="btnServiceStart">Start</button>
-          <button onclick="serviceStop()" id="btnServiceStop">Stop</button>
-        </div>
-        <div class="btns">
-          <button onclick="serviceReload()" id="btnServiceReload">Reload</button>
-        </div>
         <div class="webuiQr" id="webuiQr">
           <p>Scan to open the web config UI</p>
           <canvas id="webuiQrCanvas"></canvas>
@@ -57,7 +49,7 @@
       </div>
 
       <div id="settings" class="settings">
-        <div class="settingItems settingItemsNormal" id="settingItemsNormal">
+        <div class="settingItems" id="settingItems">
           <ul>
             <li><p><b>Output</b></p></li>
           </ul><br/>
@@ -78,7 +70,9 @@
                 <input type="text" id="txtInputSettingsWledPort"/>
               </li>
             </div>
-          </ul><br/>
+          </ul>
+          <p class="settingHint">Sends to WLED directly. Off = use Hyperion receiver below.</p>
+          <br/>
           <div class="hyperionreceiver" id="hyperionreceiversettings">
           <ul>
             <li><p><b>Hyperion receiver (legacy)</b></p></li>
@@ -122,11 +116,8 @@
           </ul><br/>
           </div>
           <ul>
-            <li><p><b>Capture</b></p></li>
-          </ul><br/>
-          <ul>
             <li>
-              <p>Resolution</p>
+              <p>Capture resolution</p>
                 <select name="resolution" id="selectSettingsResolution" onchange="resolutionChanged(this)">
                   <option value="320x180">320x180</option>
                   <option value="256x144">256x144</option>
@@ -146,12 +137,9 @@
               </li>
             </div>
             <li>
-              <p>Maximal FPS</p>
+              <p>Capture max. FPS</p>
               <input type="text" id="txtInputSettingsFPS"/>
             </li>
-          </ul><br/> 
-          <ul>
-            <li><p>_______________________________________________</p></li>
           </ul><br/>
           <ul>
             <li>
@@ -172,77 +160,65 @@
                 <option value="disabled">disabled</option>
               </select>
               </li>
-              <li>
-                <div class="checkboxes checklabel">
-                  <label for="checkSettingsAutostart">Autostart<input type="checkbox" id="checkSettingsAutostart"/></label><br/>
-                  <label for="checkSettingsVSync">VSync<input type="checkbox" id="checkSettingsVSync"/></label>
-                  <label for="checkSettingsNV12">NV12<input type="checkbox" id="checkSettingsNV12"/></label>
-                </div>
-              </li>
-            </ul><br/>
-        </div>
-        <div class="settingItems settingItemsAdv" id="settingItemsAdv">
-          <ul>
-           <li><p><b>Service advanced settings</b></p></li>
-         </ul><br/><br/>
-         <div class="dileVTCheckbox checklabel">
-           <ul>
-             <li>
-               <label><b>DILE_VT quirks:</b></label>
-             </li>
-             <li>
-               <div class="checkboxes">
-                 <label for="checkSettingsQUIRK_DILE_VT_NO_FREEZE_CAPTURE">QUIRK_DILE_VT_NO_FREEZE_CAPTURE<input type="checkbox" id="checkSettingsQUIRK_DILE_VT_NO_FREEZE_CAPTURE"/></label><br/>
-                 <label for="checkSettingsQUIRK_DILE_VT_CREATE_EX">QUIRK_DILE_VT_CREATE_EX<input type="checkbox" id="checkSettingsQUIRK_DILE_VT_CREATE_EX"/></label>
-               </div>
-             </li>
-             <li>
-               <div class="checkboxes">
-                 <label for="checkSettingsQUIRK_DILE_VT_DUMP_LOCATION_2">QUIRK_DILE_VT_DUMP_LOCATION_2<input type="checkbox" id="checkSettingsQUIRK_DILE_VT_DUMP_LOCATION_2"/></label>
-               </div>
-             </li>
-           </ul>
-         </div>
-         <ul>
-           <li><p>_______________________________________________</p></li>
-         </ul><br/><br/>
-         <div class="vtCaptureCheckbox checklabel">
-           <ul>
-             <li>
-               <label><b>vtCapture quirks:</b></label>
-             </li>
-             <li>
-               <div class="checkboxes">
-                 <label for="checkSettingsQUIRK_VTCAPTURE_FORCE_CAPTURE">QUIRK_VTCAPTURE_FORCE_CAPTURE<input type="checkbox" id="checkSettingsQUIRK_VTCAPTURE_FORCE_CAPTURE"/></label>
-               </div>
-             </li>
-           </ul><br/>
-         </div>
-         <ul>
-           <li><p>_______________________________________________</p></li>
-         </ul><br/><br/>
-         <div class="GlobalCheckbox checklabel">
-           <ul>
-             <li>
-               <div class="checkboxes">
-                 <label for="checkSettingsNoHDR">Disable HyperHDR SDR/HDR switch<input type="checkbox" id="checkSettingsNoHDR"/></label>
-               </div>
-             </li>
-             <li>
-               <div class="checkboxes">
-                 <label for="checkSettingsNoPowerstate">Disable powerstate check<input type="checkbox" id="checkSettingsNoPowerstate"/></label>
-               </div>
-             </li>
-           </ul><br/>
-         </div>
-       </div>
-        <div class="btns">
-          <button onclick="serviceSaveSettings()" id="btnSettingsSave">Save</button>
-          <button onclick="serviceResetSettings()" id="btnSettingsReset">Reset</button>
-          <button onclick="toggleAdvanced()" id="btnSettingsAdvanced">Advanced</button>
+          </ul><br/>
+
+          <div class="settingRow">
+            <label for="checkSettingsAutostart"><input type="checkbox" id="checkSettingsAutostart"/> Autostart</label>
+            <span class="settingHint">(Start automatically with the service.)</span>
+          </div>
+          <div class="settingRow">
+            <label for="checkSettingsVSync"><input type="checkbox" id="checkSettingsVSync"/> VSync</label>
+            <span class="settingHint">(Sync to screen refresh. Off if stuttering.)</span>
+          </div>
+          <div class="settingRow">
+            <label for="checkSettingsNV12"><input type="checkbox" id="checkSettingsNV12"/> NV12</label>
+            <span class="settingHint">(Lower-CPU pixel format, same result.)</span>
+          </div>
+          <div class="settingRow">
+            <label for="checkSettingsLetterboxDetection"><input type="checkbox" id="checkSettingsLetterboxDetection"/> Letterbox detection</label>
+            <span class="settingHint">(Ignore black bars around the picture.)</span>
+          </div>
+          <div class="settingRow">
+            <label for="checkSettingsSceneDimming"><input type="checkbox" id="checkSettingsSceneDimming"/> Scene brightness dimming</label>
+            <span class="settingHint">(Dim all LEDs together in dark scenes.)</span>
+          </div>
+          <br/>
+
+          <details class="advancedDetails">
+            <summary><b>Advanced / device quirks</b></summary>
+            <p class="settingHint">Device-specific workarounds. Only enable one if video capture fails to start.</p>
+            <br/>
+
+            <div class="settingRow">
+              <label for="checkSettingsQUIRK_DILE_VT_CREATE_EX"><input type="checkbox" id="checkSettingsQUIRK_DILE_VT_CREATE_EX"/> QUIRK_DILE_VT_CREATE_EX</label>
+              <span class="settingHint">(Alternate driver init (old libdile_vt).)</span>
+            </div>
+            <div class="settingRow">
+              <label for="checkSettingsQUIRK_DILE_VT_NO_FREEZE_CAPTURE"><input type="checkbox" id="checkSettingsQUIRK_DILE_VT_NO_FREEZE_CAPTURE"/> QUIRK_DILE_VT_NO_FREEZE_CAPTURE</label>
+              <span class="settingHint">(Don't freeze picture per frame (old libdile_vt).)</span>
+            </div>
+            <div class="settingRow">
+              <label for="checkSettingsQUIRK_DILE_VT_DUMP_LOCATION_2"><input type="checkbox" id="checkSettingsQUIRK_DILE_VT_DUMP_LOCATION_2"/> QUIRK_DILE_VT_DUMP_LOCATION_2</label>
+              <span class="settingHint">(Alternate memory location (old libdile_vt).)</span>
+            </div>
+            <div class="settingRow">
+              <label for="checkSettingsQUIRK_VTCAPTURE_FORCE_CAPTURE"><input type="checkbox" id="checkSettingsQUIRK_VTCAPTURE_FORCE_CAPTURE"/> QUIRK_VTCAPTURE_FORCE_CAPTURE</label>
+              <span class="settingHint">(Force vtCapture ready instantly after restart.)</span>
+            </div>
+            <div class="settingRow">
+              <label for="checkSettingsNoHDR"><input type="checkbox" id="checkSettingsNoHDR"/> Disable HyperHDR SDR/HDR switch</label>
+              <span class="settingHint">(Stop reporting SDR/HDR switches to Hyperion.)</span>
+            </div>
+            <div class="settingRow">
+              <label for="checkSettingsNoPowerstate"><input type="checkbox" id="checkSettingsNoPowerstate"/> Disable powerstate check</label>
+              <span class="settingHint">(Keep running during screensaver/standby.)</span>
+            </div>
+          </details>
         </div>
         <div class="btns">
-          <button onclick="tvReboot()" id="btnSettingsReboot">Reboot</button>
+          <button onclick="serviceSaveSettings()" id="btnSettingsSave">Save (and restart)</button>
+          <button onclick="serviceResetSettings()" id="btnSettingsReset">Defaults</button>
+          <button onclick="tvReboot()" id="btnSettingsReboot">Reboot TV</button>
         </div>
       </div>
       </div>
