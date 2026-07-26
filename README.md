@@ -49,8 +49,7 @@ Stick, Chromecast, game console, ...) is unaffected.
   installed (used to elevate the service to root on first launch)
 
 ### Manual install
-Build it yourself (see below) or grab a pre-built `.ipk` from
-[Releases](https://github.com/ICEbAIR82/piccapplus/releases), then:
+Build it yourself (see below), then:
 
 ```sh
 # Copy the IPK to the TV
